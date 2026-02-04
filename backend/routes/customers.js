@@ -134,4 +134,24 @@ router.patch('/:customer_id', async (req, res) => {
   }
 });
 
+router.delete('/:customer_id', async (req, res) => {
+  try {
+    const { customer_id } = req.params;
+    const customer = await Customer.findOne({ customer_id });
+    if (!customer) return res.status(404).json({ error: 'Customer not found' });
+    const orders = await Order.find({ customer_id });
+    const orderIds = orders.map((o) => o.order_id);
+    const garments = await Garment.find({ order_id: { $in: orderIds } });
+    const garmentIds = garments.map((g) => g.garment_id);
+    await DeliveryItem.deleteMany({ garment_id: { $in: garmentIds } });
+    await Garment.deleteMany({ order_id: { $in: orderIds } });
+    await Payment.deleteMany({ order_id: { $in: orderIds } });
+    await Order.deleteMany({ customer_id });
+    await Customer.deleteOne({ customer_id });
+    res.json({ deleted: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

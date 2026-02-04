@@ -62,6 +62,7 @@ export default function CustomerDetail() {
   const [editName, setEditName] = useState('');
   const [editPhone, setEditPhone] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [zoomedImage, setZoomedImage] = useState(null);
 
   const load = () => api.customers.getOverview(customerId).then(setData).catch((e) => setError(e.message));
@@ -147,6 +148,17 @@ export default function CustomerDetail() {
       })
       .catch((e) => setActionError(e.message))
       .finally(() => setSaving(false));
+  };
+
+  const deleteCustomer = () => {
+    if (!window.confirm(`Delete customer "${customer.name}"? All their orders, garments, and payments will be removed. This cannot be undone.`)) return;
+    setActionError(null);
+    setDeleting(true);
+    api.customers
+      .delete(customerId)
+      .then(() => navigate('/customers', { replace: true }))
+      .catch((e) => setActionError(e.message))
+      .finally(() => setDeleting(false));
   };
 
   const submitPayment = (e) => {
@@ -253,9 +265,14 @@ export default function CustomerDetail() {
               <>
                 <h1 className="page-title">{customer.name}</h1>
                 <p className="page-header-phone">{customer.phone ? customer.phone : 'Phone —'}</p>
-                <button type="button" className="btn btn-edit-inline" onClick={startEdit}>
-                  Edit
-                </button>
+                <div className="customer-details-actions">
+                  <button type="button" className="btn btn-action-inline" onClick={startEdit} disabled={deleting}>
+                    Edit
+                  </button>
+                  <button type="button" className="btn btn-action-inline btn-delete-inline" onClick={deleteCustomer} disabled={deleting}>
+                    {deleting ? 'Deleting…' : 'Delete'}
+                  </button>
+                </div>
               </>
             )}
           </div>
