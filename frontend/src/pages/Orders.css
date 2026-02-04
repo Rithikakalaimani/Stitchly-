@@ -1,0 +1,47 @@
+.orders-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-bar .tab {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.filter-bar .tab:hover {
+  background: var(--surface-hover);
+}
+
+.filter-bar .tab.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.badge-open {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--warning);
+}
+
+.badge-completed {
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--success);
+}

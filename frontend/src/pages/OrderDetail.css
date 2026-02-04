@@ -1,0 +1,410 @@
+.order-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.order-detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .order-detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .order-detail .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-detail .back {
+    min-height: 44px;
+    padding: 0.5rem 0;
+  }
+
+  .info-card .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .billing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-detail .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .order-detail .data-table th,
+  .order-detail .data-table td {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+.order-detail .page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.order-detail .back {
+  color: var(--text-muted);
+  padding: 0.25rem 0;
+}
+
+.order-detail .back:hover {
+  color: var(--accent);
+}
+
+.order-detail .customer-detail-link {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.order-detail .customer-detail-link:hover {
+  text-decoration: underline;
+}
+
+.info-card .info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.info-card .label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.info-card .value {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+}
+
+.billing-card h2,
+.order-detail .card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.billing-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.billing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  background: var(--bg);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.billing-row.paid .billing-value,
+.billing-row.remaining .billing-value {
+  color: var(--text);
+}
+
+.billing-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.billing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.billing-item {
+  padding: 0.75rem;
+  background: var(--bg);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.billing-item.highlight {
+  border-color: var(--accent-dim);
+  background: rgba(201, 169, 98, 0.08);
+}
+
+.billing-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.billing-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.billing-value.success {
+  color: var(--success);
+}
+
+.badge-delivered {
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--success);
+}
+
+.badge-stitched {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--warning);
+}
+
+.badge-pending {
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--text-muted);
+}
+
+.order-detail .payment-form .form-row.inline {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0;
+}
+
+.order-detail .payment-form input[type="number"] {
+  width: 120px;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+}
+
+.order-detail .payment-form select {
+  padding: 0.5rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+}
+
+.delivery-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--text-muted);
+}
+
+.delivery-list li {
+  margin-bottom: 0.25rem;
+}
+
+.garments-table .th-photo,
+.garments-table .td-photo {
+  width: 52px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.garment-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.garments-table .no-photo {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Side checklist */
+.order-checklist {
+  position: sticky;
+  top: 5rem;
+}
+
+.order-checklist h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.checklist-summary {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.checklist-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0;
+  font-size: 0.9rem;
+}
+
+.checklist-summary-row span:first-child {
+  color: var(--text-muted);
+}
+
+.checklist-summary-row.paid span:last-child {
+  color: var(--text);
+}
+
+.checklist-summary-row.remaining span:last-child {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checklist-item {
+  display: grid;
+  grid-template-columns: auto 36px 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.checklist-item.delivered {
+  border-color: rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.06);
+}
+
+.checklist-item.stitched {
+  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(251, 191, 36, 0.06);
+}
+
+.checklist-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.checklist-item.stitched .checklist-icon {
+  color: var(--warning);
+}
+
+.checklist-item.delivered .checklist-icon {
+  color: var(--success);
+}
+
+.checklist-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.checklist-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.checklist-thumb .no-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.checklist-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.checklist-type {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.checklist-status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.checklist-item.delivered .checklist-status {
+  color: var(--success);
+}
+
+.checklist-item.stitched .checklist-status {
+  color: var(--warning);
+}
+
+.checklist-qty {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.checklist-status-select {
+  margin-top: 0.35rem;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.checklist-status-select:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.checklist-item.delivered .checklist-status-select {
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.checklist-item.stitched .checklist-status-select {
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.order-detail .banner.error {
+  margin-bottom: 0;
+}
