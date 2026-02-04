@@ -31,6 +31,42 @@ router.get('/', async (req, res) => {
       .limit(searchLimit)
       .lean();
 
+    if (customers.length === 0) {
+      return res.json(customers);
+    }
+
+    const customerIds = customers.map((c) => c.customer_id);
+    const orders = await Order.find({ customer_id: { $in: customerIds } }).lean();
+    const orderIds = orders.map((o) => o.order_id);
+    if (orderIds.length === 0) {
+      customers.forEach((c) => { c.due = 0; });
+      return res.json(customers);
+    }
+
+    const [garments, payments] = await Promise.all([
+      Garment.find({ order_id: { $in: orderIds } }).lean(),
+      Payment.find({ order_id: { $in: orderIds } }).lean(),
+    ]);
+    const estimatedByOrder = garments.reduce((acc, g) => {
+      if (!acc[g.order_id]) acc[g.order_id] = 0;
+      acc[g.order_id] += g.quantity * g.price_per_piece;
+      return acc;
+    }, {});
+    const paidByOrder = payments.reduce((acc, p) => {
+      acc[p.order_id] = (acc[p.order_id] || 0) + p.amount_paid;
+      return acc;
+    }, {});
+    const dueByCustomer = {};
+    orders.forEach((o) => {
+      const estimated = estimatedByOrder[o.order_id] || o.total_estimated_amount || 0;
+      const paid = paidByOrder[o.order_id] || 0;
+      const due = Math.max(0, estimated - paid);
+      dueByCustomer[o.customer_id] = (dueByCustomer[o.customer_id] || 0) + due;
+    });
+    customers.forEach((c) => {
+      c.due = dueByCustomer[c.customer_id] || 0;
+    });
+
     res.json(customers);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -39,10 +75,16 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, address } = req.body;
+    const { name, phone, address, notes } = req.body;
     if (!name) return res.status(400).json({ error: 'name required' });
     const customer_id = genId('C');
-    const customer = await Customer.create({ customer_id, name, phone: phone || '', address: address || '' });
+    const customer = await Customer.create({
+      customer_id,
+      name,
+      phone: phone || '',
+      address: address || '',
+      notes: notes || '',
+    });
     res.status(201).json(customer);
   } catch (err) {
     res.status(500).json({ error: err.message });

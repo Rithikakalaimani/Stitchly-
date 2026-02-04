@@ -192,6 +192,20 @@
   text-decoration: none;
 }
 
+.customer-name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.customer-due-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--warning);
+}
+
 /* Actions column: enough space so View/Edit don't overlap phone */
 .customers .data-table th.customer-actions-header,
 .customers .data-table td.customer-actions {
@@ -299,6 +313,12 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text);
+}
+
+.form-notes-input {
+  font-family: inherit;
+  resize: vertical;
+  min-height: 56px;
 }
 
 .form-row textarea {

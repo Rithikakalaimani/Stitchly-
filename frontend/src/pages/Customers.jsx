@@ -14,7 +14,7 @@ export default function Customers() {
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', phone: '' });
+  const [form, setForm] = useState({ name: '', phone: '', notes: '' });
   const [searchQuery, setSearchQuery] = useState('');
   const [importingContacts, setImportingContacts] = useState(false);
   const [importMessage, setImportMessage] = useState(null);
@@ -97,9 +97,9 @@ export default function Customers() {
     if (!form.name.trim()) return;
     setError(null);
     api.customers
-      .create({ name: form.name.trim(), phone: (form.phone || '').trim() })
+      .create({ name: form.name.trim(), phone: (form.phone || '').trim(), notes: (form.notes || '').trim() })
       .then(() => {
-        setForm({ name: '', phone: '' });
+        setForm({ name: '', phone: '', notes: '' });
         setShowForm(false);
         setError(null);
         loadRecent(0, false);
@@ -119,7 +119,7 @@ export default function Customers() {
       if (contacts && contacts.length > 0) {
         const name = (contacts[0].name && contacts[0].name[0]) ? contacts[0].name[0].trim() : '';
         const phone = (contacts[0].tel && contacts[0].tel[0]) ? contacts[0].tel[0].trim() : '';
-        setForm((f) => ({ ...f, name: name || f.name, phone: phone || f.phone }));
+        setForm((f) => ({ ...f, name: name || f.name, phone: phone || f.phone, notes: f.notes }));
       }
     } catch (err) {
       if (err.name !== 'SecurityError' && err.name !== 'InvalidStateError') {
@@ -244,6 +244,16 @@ export default function Customers() {
               placeholder="Phone (optional)"
             />
           </div>
+          <div className="form-row">
+            <label>Notes</label>
+            <textarea
+              value={form.notes}
+              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+              placeholder="Notes (optional)"
+              rows={2}
+              className="form-notes-input"
+            />
+          </div>
           <div className="form-actions">
             <button type="button" className="btn btn-outline btn-form-action" onClick={() => setShowForm(false)}>
               Cancel
@@ -275,9 +285,18 @@ export default function Customers() {
                   list.map((c) => (
                 <tr key={c.customer_id}>
                   <td>
-                    <Link to={`/customers/${c.customer_id}`} className="customer-name-link">
-                      {c.name}
-                    </Link>
+                    <span className="customer-name-cell">
+                      {(c.due ?? 0) > 0 && (
+                        <span
+                          className="customer-due-dot"
+                          title={`₹${Number(c.due).toLocaleString('en-IN')} due`}
+                          aria-label="Has due amount"
+                        />
+                      )}
+                      <Link to={`/customers/${c.customer_id}`} className="customer-name-link">
+                        {c.name}
+                      </Link>
+                    </span>
                   </td>
                   <td>{c.phone || '—'}</td>
                   <td className="customer-actions">

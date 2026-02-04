@@ -61,6 +61,7 @@ export default function CustomerDetail() {
   const [editing, setEditing] = useState(!!location.state?.edit);
   const [editName, setEditName] = useState('');
   const [editPhone, setEditPhone] = useState('');
+  const [editNotes, setEditNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [zoomedImage, setZoomedImage] = useState(null);
@@ -75,6 +76,7 @@ export default function CustomerDetail() {
     if (data?.customer) {
       setEditName(data.customer.name || '');
       setEditPhone(data.customer.phone || '');
+      setEditNotes(data.customer.notes || '');
     }
   }, [data?.customer]);
 
@@ -120,6 +122,7 @@ export default function CustomerDetail() {
   const startEdit = () => {
     setEditName(customer.name || '');
     setEditPhone(customer.phone || '');
+    setEditNotes(customer.notes || '');
     setEditing(true);
     setActionError(null);
   };
@@ -128,6 +131,7 @@ export default function CustomerDetail() {
     setEditing(false);
     setEditName(customer.name || '');
     setEditPhone(customer.phone || '');
+    setEditNotes(customer.notes || '');
     setActionError(null);
   };
 
@@ -141,7 +145,7 @@ export default function CustomerDetail() {
     setActionError(null);
     setSaving(true);
     api.customers
-      .update(customerId, { name, phone: (editPhone || '').trim() })
+      .update(customerId, { name, phone: (editPhone || '').trim(), notes: (editNotes || '').trim() })
       .then(() => {
         setEditing(false);
         load();
@@ -251,6 +255,13 @@ export default function CustomerDetail() {
                     onChange={(e) => setEditPhone(e.target.value)}
                     placeholder="Phone"
                   />
+                  <textarea
+                    className="customer-edit-notes"
+                    value={editNotes}
+                    onChange={(e) => setEditNotes(e.target.value)}
+                    placeholder="Notes (optional)"
+                    rows={3}
+                  />
                 </div>
                 <div className="customer-edit-actions">
                   <button type="button" className="btn btn-outline btn-sm" onClick={cancelEdit} disabled={saving}>
@@ -265,6 +276,9 @@ export default function CustomerDetail() {
               <>
                 <h1 className="page-title">{customer.name}</h1>
                 <p className="page-header-phone">{customer.phone ? customer.phone : 'Phone —'}</p>
+                {customer.notes ? (
+                  <p className="page-header-notes">{customer.notes}</p>
+                ) : null}
                 <div className="customer-details-actions">
                   <button type="button" className="btn btn-action-inline" onClick={startEdit} disabled={deleting}>
                     Edit
