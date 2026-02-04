@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { api } from '../api';
 import './Customers.css';
 
+const CONTACTS_API_SUPPORTED = typeof navigator !== 'undefined' && 'contacts' in navigator && 'ContactsManager' in window;
+
 export default function Customers() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,6 +12,8 @@ export default function Customers() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [importingContacts, setImportingContacts] = useState(false);
+  const [importMessage, setImportMessage] = useState(null);
 
   const load = () => api.customers.list().then(setList).catch((e) => setError(e.message));
 
@@ -26,6 +30,12 @@ export default function Customers() {
     load().finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!importMessage) return;
+    const t = setTimeout(() => setImportMessage(null), 5000);
+    return () => clearTimeout(t);
+  }, [importMessage]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.name.trim()) return;
@@ -40,6 +50,73 @@ export default function Customers() {
       .catch((e) => setError(e.message));
   };
 
+  const pickContactForForm = async () => {
+    if (!CONTACTS_API_SUPPORTED) {
+      setError('Pick from contacts works on mobile (e.g. Android Chrome). Use HTTPS and try on your phone.');
+      return;
+    }
+    setError(null);
+    try {
+      const props = ['name', 'tel'];
+      const contacts = await navigator.contacts.select(props, { multiple: false });
+      if (contacts && contacts.length > 0) {
+        const name = (contacts[0].name && contacts[0].name[0]) ? contacts[0].name[0].trim() : '';
+        const phone = (contacts[0].tel && contacts[0].tel[0]) ? contacts[0].tel[0].trim() : '';
+        setForm((f) => ({ ...f, name: name || f.name, phone: phone || f.phone }));
+      }
+    } catch (err) {
+      if (err.name !== 'SecurityError' && err.name !== 'InvalidStateError') {
+        setError(err.message || 'Could not open contacts.');
+      }
+    }
+  };
+
+  const importFromContacts = async () => {
+    if (!CONTACTS_API_SUPPORTED) {
+      setError('Import from contacts is supported on mobile (e.g. Android Chrome). Use HTTPS and try on your phone.');
+      return;
+    }
+    setError(null);
+    setImportMessage(null);
+    setImportingContacts(true);
+    try {
+      const props = ['name', 'tel'];
+      const opts = { multiple: true };
+      const contacts = await navigator.contacts.select(props, opts);
+      const existingPhones = new Set((list || []).map((c) => (c.phone || '').replace(/\D/g, '')));
+      let added = 0;
+      let skipped = 0;
+      for (const contact of contacts) {
+        const name = (contact.name && contact.name[0]) ? contact.name[0].trim() : '';
+        const phone = (contact.tel && contact.tel[0]) ? contact.tel[0].trim() : '';
+        if (!name) {
+          skipped++;
+          continue;
+        }
+        const phoneDigits = phone.replace(/\D/g, '');
+        if (phoneDigits && existingPhones.has(phoneDigits)) {
+          skipped++;
+          continue;
+        }
+        try {
+          await api.customers.create({ name, phone });
+          added++;
+          if (phoneDigits) existingPhones.add(phoneDigits);
+        } catch {
+          skipped++;
+        }
+      }
+      await load();
+      setImportMessage(added > 0 ? `Added ${added} customer${added !== 1 ? 's' : ''}. They appear in the list below.${skipped > 0 ? ` ${skipped} skipped (already exist or no name).` : ''}` : 'No new customers added. Select contacts with a name.');
+    } catch (err) {
+      if (err.name !== 'SecurityError' && err.name !== 'InvalidStateError') {
+        setError(err.message || 'Could not import contacts.');
+      }
+    } finally {
+      setImportingContacts(false);
+    }
+  };
+
   if (loading) return <div className="page-loading">Loading customers…</div>;
 
   return (
@@ -50,6 +127,16 @@ export default function Customers() {
           <Link to="/orders/new" className="btn btn-primary btn-header">
             Add new order
           </Link>
+          {CONTACTS_API_SUPPORTED && (
+            <button
+              type="button"
+              className="btn btn-outline btn-header"
+              onClick={importFromContacts}
+              disabled={importingContacts}
+            >
+              {importingContacts ? 'Importing…' : 'Import from contacts'}
+            </button>
+          )}
           <button type="button" className="btn btn-outline btn-header" onClick={() => setShowForm(!showForm)}>
             {showForm ? 'Cancel' : 'Add customer'}
           </button>
@@ -68,10 +155,21 @@ export default function Customers() {
       </div>
 
       {error && <div className="banner error">{error}</div>}
+      {importMessage && <div className="banner success">{importMessage}</div>}
 
       {showForm && (
         <form className="card form-card" onSubmit={handleSubmit}>
           <h2>New customer</h2>
+          {CONTACTS_API_SUPPORTED && (
+            <button
+              type="button"
+              className="btn-pick-contact"
+              onClick={pickContactForForm}
+              aria-label="Fill name and phone from your contacts"
+            >
+              Use name & phone from contacts
+            </button>
+          )}
           <div className="form-row">
             <label>Name *</label>
             <input

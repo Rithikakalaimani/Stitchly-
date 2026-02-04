@@ -239,6 +239,11 @@
   color: var(--danger);
 }
 
+.banner.success {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--success);
+}
+
 .form-card {
   max-width: 400px;
 }
@@ -246,6 +251,22 @@
 .form-card h2 {
   margin: 0 0 1rem;
   font-size: 1.1rem;
+}
+
+.btn-pick-contact {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  background: rgba(37, 211, 102, 0.15);
+  border: 1px solid rgba(37, 211, 102, 0.4);
+  border-radius: 6px;
+  color: #25d366;
+  cursor: pointer;
+}
+
+.btn-pick-contact:hover {
+  background: rgba(37, 211, 102, 0.25);
 }
 
 .form-row {

@@ -168,14 +168,14 @@ export default function NewOrder() {
                 className="btn btn-take-photo"
                 onClick={() => cameraInputRef.current?.click()}
               >
-                📷 Take photo
+                Take photo
               </button>
               <button
                 type="button"
                 className="btn btn-add-photo"
                 onClick={() => galleryInputRef.current?.click()}
               >
-                🖼 Add photo
+                Add photo
               </button>
             </div>
           </div>

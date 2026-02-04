@@ -1,12 +1,47 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { IoClose } from 'react-icons/io5';
+import { FaWhatsapp } from 'react-icons/fa';
 import { api } from '../api';
 import './CustomerDetail.css';
 
 function formatMoney(n) {
   if (n == null || isNaN(n)) return '0';
   return Number(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+}
+
+function buildBillingMessage(totalAmount, remainingAmount, garments) {
+  const leftParts = [];
+  const amountStrs = [];
+  if (garments && garments.length > 0) {
+    garments.forEach((g) => {
+      const amt = g.quantity * (g.price_per_piece || 0);
+      leftParts.push('  • ' + (g.type || 'Item').trim());
+      amountStrs.push('₹' + formatMoney(amt));
+    });
+  }
+  leftParts.push('Total');
+  amountStrs.push('₹' + formatMoney(totalAmount));
+  if (remainingAmount != null && remainingAmount > 0) {
+    leftParts.push('Due');
+    amountStrs.push('₹' + formatMoney(remainingAmount));
+  }
+  const maxLeft = Math.max(...leftParts.map((s) => s.length), 1);
+  const maxAmt = Math.max(...amountStrs.map((s) => s.length), 1);
+  const lines = ['Billing', ''];
+  leftParts.forEach((left, i) => {
+    lines.push(left.padEnd(maxLeft) + amountStrs[i].padStart(maxAmt));
+  });
+  return lines.join('\n');
+}
+
+function whatsappPhone(phone) {
+  if (!phone || typeof phone !== 'string') return null;
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 10) return '91' + digits;
+  if (digits.length === 12 && digits.startsWith('91')) return digits;
+  if (digits.length >= 10) return digits.slice(-10).replace(/^/, '91');
+  return null;
 }
 
 export default function CustomerDetail() {
@@ -67,6 +102,18 @@ export default function CustomerDetail() {
       .then(() => load())
       .catch((e) => setActionError(e.message))
       .finally(() => setDeletingGarment(null));
+  };
+
+  const [clearingAll, setClearingAll] = useState(false);
+  const clearAllGarments = () => {
+    if (!window.confirm('Remove all order details (garments) for this customer? This cannot be undone.')) return;
+    setActionError(null);
+    setClearingAll(true);
+    api.customers
+      .clearAllGarments(customerId)
+      .then(() => load())
+      .catch((e) => setActionError(e.message))
+      .finally(() => setClearingAll(false));
   };
 
   const startEdit = () => {
@@ -149,6 +196,16 @@ export default function CustomerDetail() {
     orderTypeLabels[o.order_id] = types.length ? types.join(', ') : 'Order';
   });
 
+  const shareBillingWhatsApp = () => {
+    const text = buildBillingMessage(totalAmount, remainingAmount, garments);
+    const encoded = encodeURIComponent(text);
+    const phone = whatsappPhone(customer.phone);
+    const url = phone
+      ? `https://wa.me/${phone}?text=${encoded}`
+      : `https://wa.me/?text=${encoded}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="customer-detail">
       <div className="page-header">
@@ -224,10 +281,31 @@ export default function CustomerDetail() {
               <span className="billing-value">₹{formatMoney(remainingAmount)}</span>
             </div>
           </div>
+          <button
+            type="button"
+            className="btn-share-whatsapp"
+            onClick={shareBillingWhatsApp}
+            aria-label="Share billing via WhatsApp"
+          >
+            <FaWhatsapp className="btn-share-whatsapp-icon" aria-hidden />
+          </button>
         </section>
 
         <section className="card">
-          <h2>Order details</h2>
+          <div className="order-details-header">
+            <h2>Order details</h2>
+            {garments.length > 0 && (
+              <button
+                type="button"
+                className="btn-clear-all"
+                onClick={clearAllGarments}
+                disabled={clearingAll}
+                aria-label="Clear all order details"
+              >
+                {clearingAll ? 'Clearing…' : 'Clear all'}
+              </button>
+            )}
+          </div>
           {garments.length === 0 ? (
             <p className="muted">No garments yet. Add a new order to get started.</p>
           ) : (

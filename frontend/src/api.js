@@ -17,6 +17,7 @@ export const api = {
     getOverview: (id) => request(`/customers/${id}/overview`),
     create: (body) => request('/customers', { method: 'POST', body: JSON.stringify(body) }),
     update: (id, body) => request(`/customers/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+    clearAllGarments: (id) => request(`/customers/${id}/garments`, { method: 'DELETE' }),
   },
   orders: {
     list: (params) => request('/orders' + (params ? '?' + new URLSearchParams(params).toString() : '')),

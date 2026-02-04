@@ -61,7 +61,7 @@ router.get('/:order_id', async (req, res) => {
 // Create order with garments
 router.post('/', async (req, res) => {
   try {
-    const { customer_id, garments: garmentsInput } = req.body;
+    const { customer_id, garments: garmentsInput } = req.body; 
     if (!customer_id) return res.status(400).json({ error: 'customer_id required' });
     const customer = await Customer.findOne({ customer_id });
     if (!customer) return res.status(400).json({ error: 'Customer not found' });

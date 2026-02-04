@@ -175,9 +175,67 @@
   color: var(--text);
 }
 
+.btn-share-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  background: #25d366;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-share-whatsapp:hover {
+  background: #20bd5a;
+  color: #fff;
+}
+
+.btn-share-whatsapp-icon {
+  font-size: 1.35rem;
+}
+
 .customer-detail .card h2 {
   margin: 0 0 0.5rem;
   font-size: 1.1rem;
+}
+
+.order-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.order-details-header h2 {
+  margin: 0;
+}
+
+.btn-clear-all {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.btn-clear-all:hover:not(:disabled) {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.btn-clear-all:disabled {
+  opacity: 0.7;
+  cursor: wait;
 }
 
 /* Colored garment checklist */
