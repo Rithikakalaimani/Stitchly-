@@ -30,6 +30,14 @@ A full-stack app for tailors to manage customers, orders, billing, and design ga
 - **Mobile**
   - Layout and touch targets are tuned for small screens. **Header menu** (hamburger) on small screens opens a slide-out with Dashboard, Customers, and Designs. Customer page, order details, and dashboard work on phones.
 
+
+## Screenshots 
+
+![ss1](https://github.com/Rithikakalaimani/Stitchly/blob/main/screenshots/Screenshot%202026-02-04%20at%206.43.29%E2%80%AFPM.png)
+![ss2](https://github.com/Rithikakalaimani/Stitchly/blob/main/screenshots/Screenshot%202026-02-04%20at%206.44.47%E2%80%AFPM.png)
+![ss3](https://github.com/Rithikakalaimani/Stitchly/blob/main/screenshots/Screenshot%202026-02-04%20at%206.44.26%E2%80%AFPM.png)
+![ss4](https://github.com/Rithikakalaimani/Stitchly/blob/main/screenshots/Screenshot%202026-02-04%20at%206.44.53%E2%80%AFPM.png)
+![ss5](https://github.com/Rithikakalaimani/Stitchly/blob/main/screenshots/Screenshot%202026-02-04%20at%206.45.17%E2%80%AFPM.png)
 ## Tech stack
 
 - **Frontend**: React 18, React Router, Vite, react-icons
@@ -70,32 +78,6 @@ npm run dev
 
 App runs at **http://localhost:3000** and proxies `/api` to the backend.
 
-## Deploy to Vercel
-
-The app is set up for a single Vercel project: static frontend + API (Express in a serverless function).
-
-1. **Push your repo** to GitHub/GitLab/Bitbucket and [import the project in Vercel](https://vercel.com/new).
-
-2. **Environment variable**  
-   In the Vercel project → **Settings → Environment Variables**, add:
-   - `MONGODB_URI` = your MongoDB connection string (e.g. [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) URI).
-
-3. **Deploy**  
-   Vercel will:
-   - Install root dependencies (for the API) and build the frontend (`frontend/dist`).
-   - Serve the frontend and route `/api/*` to the serverless function in `api/index.js`.
-
-The frontend uses relative `/api` requests, so no extra env vars are needed for the client. For local development, keep using the backend and frontend as in **Setup** above.
-
-## Use as a mobile app (Add to Home Screen)
-
-Stitchly is set up as a **Progressive Web App (PWA)**. After deploying, you can install it on your phone so it appears as an icon like other apps and opens in fullscreen.
-
-- **Android (Chrome):** Open your Vercel URL in Chrome → menu (⋮) → **“Add to Home screen”** or **“Install app”**.
-- **iPhone/iPad (Safari):** Open your Vercel URL in Safari → tap the **Share** button → **“Add to Home Screen”**.
-
-The app will use the Stitchly icon and open without the browser address bar when launched from the home screen.
-
 ## API overview
 
 | Method | Path | Description |
@@ -122,12 +104,3 @@ The app will use the Stitchly icon and open without the browser address bar when
 | GET | /api/designs/:id | Get one design |
 | DELETE | /api/designs/:id | Delete design |
 
-## Data model (main)
-
-- **Customer**: customer_id, name, phone (address optional in DB, not used in UI)
-- **Order**: order_id, customer_id, order_date, total_estimated_amount, status (OPEN | COMPLETED)
-- **Garment**: garment_id, order_id, type, quantity, price_per_piece, status (PENDING | STITCHED | DELIVERED), quantity_delivered, image (optional base64)
-- **Payment**: payment_id, order_id, amount_paid, payment_date, mode (cash | UPI)
-- **Design**: design_id, name, type, images (array of 1–3 base64 URLs for design gallery)
-
-Order is set to COMPLETED when all its garments are DELIVERED. Due = total estimated − total paid per order; remaining is summed across orders for the customer.
